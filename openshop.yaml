@@ -1,0 +1,1283 @@
+openapi: 3.0.3
+info:
+  title: OpenShop Microservices API
+  description: |
+    Complete API specification for OpenShop - an e-commerce platform with microservices architecture.
+    This specification covers all services including User Management, Product Catalog, Cart, Orders,
+    Inventory, Payment, Shipping, and Notifications.
+  version: 1.0.0
+  contact:
+    name: OpenShop API Support
+    email: support@openshop.com
+
+servers:
+  - url: http://localhost:8080
+    description: API Gateway (Development)
+  - url: http://localhost:8081
+    description: User Service (Direct)
+  - url: http://localhost:8082
+    description: Product Service (Direct)
+  - url: http://localhost:8083
+    description: Order Service (Direct)
+  - url: http://localhost:8084
+    description: Cart Service (Direct)
+  - url: http://localhost:8085
+    description: Inventory Service (Direct)
+  - url: http://localhost:8086
+    description: Payment Service (Direct)
+  - url: http://localhost:8087
+    description: Shipping Service (Direct)
+  - url: http://localhost:8088
+    description: Notification Service (Direct)
+
+tags:
+  - name: Authentication
+    description: User authentication and registration endpoints
+  - name: User Management
+    description: User profile and account management
+  - name: Products
+    description: Product catalog management
+  - name: Cart
+    description: Shopping cart operations
+  - name: Orders
+    description: Order placement and management
+  - name: Inventory
+    description: Product inventory management
+  - name: Payment
+    description: Payment processing
+  - name: Shipping
+    description: Shipment tracking and management
+  - name: Notifications
+    description: User notification system
+
+security:
+  - BearerAuth: []
+
+paths:
+  # Authentication Endpoints
+  /api/auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: User login
+      description: Authenticate user and return JWT token with user details
+      operationId: login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register new user
+      description: Create a new user account
+      operationId: register
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegistration'
+      responses:
+        '201':
+          description: User registered successfully
+          headers:
+            Location:
+              schema:
+                type: string
+              description: URI of the created user resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDTO'
+        '400':
+          description: Invalid input (missing required fields)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Username already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # User Management Endpoints
+  /api/users/{id}:
+    get:
+      tags:
+        - User Management
+      summary: Get user by ID
+      description: Retrieve user details by ID (Admin only)
+      operationId: getUserById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDTO'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - User Management
+      summary: Delete user
+      description: Delete user by ID (Admin only)
+      operationId: deleteUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: User deleted successfully
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/users/me:
+    get:
+      tags:
+        - User Management
+      summary: Get current user details
+      description: Fetch profile details of the currently logged-in user
+      operationId: getMyDetails
+      responses:
+        '200':
+          description: User profile retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDTO'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+        - User Management
+      summary: Update current user profile
+      description: Update the logged-in user's information
+      operationId: updateMyProfile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDTO'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # Product Endpoints
+  /api/products:
+    post:
+      tags:
+        - Products
+      summary: Create new product
+      description: Add a new product to the catalog
+      operationId: createProduct
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductCreate'
+      responses:
+        '200':
+          description: Product created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+    get:
+      tags:
+        - Products
+      summary: Get all products
+      description: Retrieve list of all products in the catalog
+      operationId: getAllProducts
+      security: []
+      responses:
+        '200':
+          description: Products retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+
+  /api/products/{id}:
+    get:
+      tags:
+        - Products
+      summary: Get product by ID
+      description: Retrieve a single product by its ID
+      operationId: getProductById
+      security: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Product found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Product not found
+
+  /api/products/update/{id}:
+    put:
+      tags:
+        - Products
+      summary: Update product
+      description: Update an existing product (seller must own the product)
+      operationId: updateProduct
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-User-Id
+          in: header
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: Seller ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductUpdate'
+      responses:
+        '200':
+          description: Product updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '403':
+          description: Not authorized to update this product
+        '404':
+          description: Product not found
+
+  # Cart Endpoints
+  /api/cart/{userId}:
+    get:
+      tags:
+        - Cart
+      summary: Get user cart
+      description: Retrieve the shopping cart for a specific user
+      operationId: getCart
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Cart retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+
+  /api/cart/{userId}/add:
+    post:
+      tags:
+        - Cart
+      summary: Add item to cart
+      description: Add a product to the user's shopping cart
+      operationId: addItemToCart
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CartItemInput'
+      responses:
+        '200':
+          description: Item added to cart
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+
+  /api/cart/{userId}/remove/{itemId}:
+    delete:
+      tags:
+        - Cart
+      summary: Remove item from cart
+      description: Remove a specific item from the user's cart
+      operationId: removeItemFromCart
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Item removed from cart
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+
+  /api/cart/{userId}/clear:
+    delete:
+      tags:
+        - Cart
+      summary: Clear cart
+      description: Remove all items from the user's cart
+      operationId: clearCart
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Cart cleared successfully
+
+  /api/cart/{userId}/checkout:
+    post:
+      tags:
+        - Cart
+      summary: Checkout cart
+      description: Process cart checkout and create orders
+      operationId: checkoutCart
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Checkout successful
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Cart is empty or checkout failed
+          content:
+            application/json:
+              schema:
+                type: string
+
+  # Order Endpoints
+  /api/orders/placeCart:
+    post:
+      tags:
+        - Orders
+      summary: Place cart order
+      description: Create orders from a cart
+      operationId: placeCartOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CartDTO'
+      responses:
+        '200':
+          description: Orders created successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+
+  /api/orders:
+    get:
+      tags:
+        - Orders
+      summary: Get all orders
+      description: Retrieve all orders in the system
+      operationId: getAllOrders
+      responses:
+        '200':
+          description: Orders retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+
+  /api/orders/user/{userId}:
+    get:
+      tags:
+        - Orders
+      summary: Get user orders
+      description: Retrieve all orders for a specific user
+      operationId: getOrdersByUserId
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: User orders retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+
+  # Inventory Endpoints
+  /api/inventory/create:
+    post:
+      tags:
+        - Inventory
+      summary: Create inventory record
+      description: Create a new inventory record for a product
+      operationId: createInventory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InventoryRequest'
+      responses:
+        '200':
+          description: Inventory created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory'
+
+  /api/inventory/{productId}:
+    get:
+      tags:
+        - Inventory
+      summary: Get inventory by product ID
+      description: Retrieve inventory information for a specific product
+      operationId: getInventoryByProductId
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Inventory found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory'
+        '404':
+          description: Inventory not found
+
+  /api/inventory/increase:
+    post:
+      tags:
+        - Inventory
+      summary: Increase inventory
+      description: Add stock to existing inventory
+      operationId: increaseInventory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InventoryRequest'
+      responses:
+        '200':
+          description: Inventory increased successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory'
+
+  /api/inventory/reduce:
+    post:
+      tags:
+        - Inventory
+      summary: Reduce inventory
+      description: Remove stock from existing inventory
+      operationId: reduceInventory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InventoryRequest'
+      responses:
+        '200':
+          description: Inventory reduced successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory'
+        '400':
+          description: Insufficient stock or invalid request
+          content:
+            application/json:
+              schema:
+                type: string
+
+  # Payment Endpoints
+  /api/payments/initiate:
+    post:
+      tags:
+        - Payment
+      summary: Initiate payment
+      description: Create a new payment request
+      operationId: initiatePayment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+      responses:
+        '200':
+          description: Payment initiated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+
+  /api/payments/process/{orderId}:
+    post:
+      tags:
+        - Payment
+      summary: Process payment
+      description: Process payment for an order
+      operationId: processPayment
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: success
+          in: query
+          required: true
+          schema:
+            type: boolean
+          description: Payment success status
+      responses:
+        '200':
+          description: Payment processed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+
+  /api/payments/{orderId}:
+    get:
+      tags:
+        - Payment
+      summary: Get payment status
+      description: Retrieve payment status for an order
+      operationId: getPaymentStatus
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Payment status retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '404':
+          description: Payment not found
+
+  # Shipping Endpoints
+  /api/shipping:
+    post:
+      tags:
+        - Shipping
+      summary: Create shipment
+      description: Create a new shipment for an order
+      operationId: createShipment
+      parameters:
+        - name: orderId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: address
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Shipment created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shipment'
+
+  /api/shipping/{orderId}:
+    get:
+      tags:
+        - Shipping
+      summary: Get shipment by order ID
+      description: Retrieve shipment information for an order
+      operationId: getShipmentByOrderId
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Shipment found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shipment'
+        '404':
+          description: Shipment not found
+
+  /api/shipping/{shipmentId}/status:
+    put:
+      tags:
+        - Shipping
+      summary: Update shipment status
+      description: Update the status of a shipment
+      operationId: updateShipmentStatus
+      parameters:
+        - name: shipmentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [CREATED, IN_TRANSIT, DELIVERED]
+      responses:
+        '200':
+          description: Shipment status updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shipment'
+
+  # Notification Endpoints
+  /api/notifications/send:
+    post:
+      tags:
+        - Notifications
+      summary: Send notification
+      description: Send a notification to a user
+      operationId: sendNotification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationRequest'
+      responses:
+        '200':
+          description: Notification sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+
+  /api/notifications/{userId}:
+    get:
+      tags:
+        - Notifications
+      summary: Get user notifications
+      description: Retrieve all notifications for a specific user
+      operationId: getUserNotifications
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Notifications retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from /api/auth/login
+
+  schemas:
+    # Authentication Schemas
+    LoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          example: john_doe
+        password:
+          type: string
+          format: password
+          example: password123
+
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT authentication token
+        expiresAt:
+          type: string
+          format: date-time
+          description: Token expiration timestamp
+        user:
+          $ref: '#/components/schemas/UserDTO'
+
+    UserRegistration:
+      type: object
+      required:
+        - username
+        - password
+        - email
+        - role
+      properties:
+        name:
+          type: string
+          example: John Doe
+        username:
+          type: string
+          example: john_doe
+        password:
+          type: string
+          format: password
+          example: password123
+        email:
+          type: string
+          format: email
+          example: john@example.com
+        role:
+          type: string
+          enum: [ADMIN, SELLER, CUSTOMER]
+          example: CUSTOMER
+
+    # User Schemas
+    UserDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: John Doe
+        username:
+          type: string
+          example: john_doe
+        email:
+          type: string
+          format: email
+          example: john@example.com
+        role:
+          type: string
+          example: CUSTOMER
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    UserUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          example: John Doe Updated
+        email:
+          type: string
+          format: email
+          example: john.updated@example.com
+        password:
+          type: string
+          format: password
+          description: New password (optional)
+
+    # Product Schemas
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: Laptop
+        description:
+          type: string
+          example: High-performance laptop
+        category:
+          type: string
+          example: Electronics
+        price:
+          type: number
+          format: double
+          example: 999.99
+        currency:
+          type: string
+          example: USD
+        sku:
+          type: string
+          example: LAP-001
+        sellerId:
+          type: integer
+          format: int64
+          example: 1
+        imageUrl:
+          type: string
+          example: https://example.com/images/laptop.jpg
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE, OUT_OF_STOCK]
+          example: ACTIVE
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ProductCreate:
+      type: object
+      required:
+        - name
+        - price
+      properties:
+        name:
+          type: string
+          example: Laptop
+        description:
+          type: string
+          example: High-performance laptop
+        category:
+          type: string
+          example: Electronics
+        price:
+          type: number
+          format: double
+          example: 999.99
+        currency:
+          type: string
+          example: USD
+        sku:
+          type: string
+          example: LAP-001
+        sellerId:
+          type: integer
+          format: int64
+          example: 1
+        imageUrl:
+          type: string
+          example: https://example.com/images/laptop.jpg
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE, OUT_OF_STOCK]
+          example: ACTIVE
+
+    ProductUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        price:
+          type: number
+          format: double
+        currency:
+          type: string
+        sku:
+          type: string
+        imageUrl:
+          type: string
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE, OUT_OF_STOCK]
+
+    # Cart Schemas
+    Cart:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        userId:
+          type: integer
+          format: int64
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItem'
+
+    CartItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        productId:
+          type: string
+          format: uuid
+        quantity:
+          type: integer
+          example: 2
+        price:
+          type: number
+          format: double
+          example: 999.99
+
+    CartItemInput:
+      type: object
+      required:
+        - productId
+        - quantity
+        - price
+      properties:
+        productId:
+          type: string
+          format: uuid
+        quantity:
+          type: integer
+          minimum: 1
+          example: 2
+        price:
+          type: number
+          format: double
+          example: 999.99
+
+    CartDTO:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItemDTO'
+
+    CartItemDTO:
+      type: object
+      properties:
+        productId:
+          type: string
+          format: uuid
+        quantity:
+          type: integer
+        price:
+          type: number
+          format: double
+
+    # Order Schemas
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: integer
+          format: int64
+        productId:
+          type: string
+          format: uuid
+        quantity:
+          type: integer
+          example: 2
+        totalPrice:
+          type: number
+          format: double
+          example: 1999.98
+        status:
+          type: string
+          example: PLACED
+          description: Order status (PLACED, FAILED, OUT_OF_STOCK, CONFIRMED, etc.)
+        checkoutBatchId:
+          type: string
+          description: Groups all product orders from one cart checkout
+        createdAt:
+          type: string
+          format: date-time
+
+    # Inventory Schemas
+    Inventory:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        productId:
+          type: string
+          format: uuid
+        quantity:
+          type: integer
+          example: 100
+
+    InventoryRequest:
+      type: object
+      required:
+        - productId
+        - quantity
+      properties:
+        productId:
+          type: string
+          format: uuid
+        quantity:
+          type: integer
+          minimum: 0
+          example: 50
+
+    # Payment Schemas
+    Payment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        orderId:
+          type: string
+          format: uuid
+        userId:
+          type: integer
+          format: int64
+        amount:
+          type: number
+          format: double
+          example: 1999.98
+        status:
+          type: string
+          enum: [PENDING, SUCCESS, FAILED]
+          example: PENDING
+        transactionId:
+          type: string
+          example: TXN-123456
+        timestamp:
+          type: string
+          format: date-time
+
+    PaymentRequest:
+      type: object
+      required:
+        - orderId
+        - userId
+        - amount
+      properties:
+        orderId:
+          type: string
+          format: uuid
+        userId:
+          type: integer
+          format: int64
+        amount:
+          type: number
+          format: double
+          example: 1999.98
+
+    # Shipping Schemas
+    Shipment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        orderId:
+          type: string
+          format: uuid
+        userId:
+          type: integer
+          format: int64
+        address:
+          type: string
+          example: 123 Main St, City, State 12345
+        trackingNumber:
+          type: string
+          example: TRACK-123456
+        status:
+          type: string
+          enum: [CREATED, IN_TRANSIT, DELIVERED]
+          example: CREATED
+        createdAt:
+          type: string
+          format: date-time
+
+    # Notification Schemas
+    Notification:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        userId:
+          type: integer
+          format: int64
+        message:
+          type: string
+          example: Your order has been placed successfully
+        type:
+          type: string
+          enum: [EMAIL, SMS, IN_APP]
+          example: IN_APP
+        sent:
+          type: boolean
+          example: true
+        timestamp:
+          type: string
+          format: date-time
+
+    NotificationRequest:
+      type: object
+      required:
+        - userId
+        - message
+      properties:
+        userId:
+          type: integer
+          format: int64
+        message:
+          type: string
+          example: Your order has been shipped
+        type:
+          type: string
+          enum: [EMAIL, SMS, IN_APP]
+          default: IN_APP
+          example: IN_APP
+
+    # Error Schema
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          example: An error occurred
+        code:
+          type: string
+          example: ERROR_CODE
+        timestamp:
+          type: string
+          format: date-time
