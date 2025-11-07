@@ -322,20 +322,21 @@ paths:
           description: Product not found
 
   # Cart Endpoints
-  /api/cart/{userId}:
+  /api/cart:
     get:
       tags:
         - Cart
       summary: Get user cart
-      description: Retrieve the shopping cart for a specific user
+      description: Retrieve the shopping cart for the authenticated user
       operationId: getCart
       parameters:
-        - name: userId
-          in: path
+        - name: X-User-Id
+          in: header
           required: true
           schema:
             type: integer
             format: int64
+          description: User ID from authentication context
       responses:
         '200':
           description: Cart retrieved successfully
@@ -344,7 +345,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Cart'
 
-  /api/cart/{userId}/add:
+  /api/cart/add:
     post:
       tags:
         - Cart
@@ -352,12 +353,13 @@ paths:
       description: Add a product to the user's shopping cart
       operationId: addItemToCart
       parameters:
-        - name: userId
-          in: path
+        - name: X-User-Id
+          in: header
           required: true
           schema:
             type: integer
             format: int64
+          description: User ID from authentication context
       requestBody:
         required: true
         content:
@@ -372,7 +374,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Cart'
 
-  /api/cart/{userId}/remove/{itemId}:
+  /api/cart/remove/{itemId}:
     delete:
       tags:
         - Cart
@@ -380,12 +382,13 @@ paths:
       description: Remove a specific item from the user's cart
       operationId: removeItemFromCart
       parameters:
-        - name: userId
-          in: path
+        - name: X-User-Id
+          in: header
           required: true
           schema:
             type: integer
             format: int64
+          description: User ID from authentication context
         - name: itemId
           in: path
           required: true
@@ -400,7 +403,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Cart'
 
-  /api/cart/{userId}/clear:
+  /api/cart/clear:
     delete:
       tags:
         - Cart
@@ -408,17 +411,18 @@ paths:
       description: Remove all items from the user's cart
       operationId: clearCart
       parameters:
-        - name: userId
-          in: path
+        - name: X-User-Id
+          in: header
           required: true
           schema:
             type: integer
             format: int64
+          description: User ID from authentication context
       responses:
         '204':
           description: Cart cleared successfully
 
-  /api/cart/{userId}/checkout:
+  /api/cart/checkout:
     post:
       tags:
         - Cart
@@ -426,12 +430,25 @@ paths:
       description: Process cart checkout and create orders
       operationId: checkoutCart
       parameters:
-        - name: userId
-          in: path
+        - name: X-User-Id
+          in: header
           required: true
           schema:
             type: integer
             format: int64
+          description: User ID from authentication context
+        - name: X-User-Name
+          in: header
+          required: false
+          schema:
+            type: string
+          description: Username from authentication context
+        - name: X-User-Role
+          in: header
+          required: false
+          schema:
+            type: string
+          description: User role from authentication context
       responses:
         '200':
           description: Checkout successful
@@ -487,20 +504,21 @@ paths:
                 items:
                   $ref: '#/components/schemas/Order'
 
-  /api/orders/user/{userId}:
+  /api/orders/user:
     get:
       tags:
         - Orders
       summary: Get user orders
-      description: Retrieve all orders for a specific user
+      description: Retrieve all orders for the authenticated user
       operationId: getOrdersByUserId
       parameters:
-        - name: userId
-          in: path
+        - name: X-User-Id
+          in: header
           required: true
           schema:
             type: integer
             format: int64
+          description: User ID from authentication context
       responses:
         '200':
           description: User orders retrieved successfully
@@ -510,6 +528,40 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Order'
+
+  /api/orders/compensate/{orderId}:
+    post:
+      tags:
+        - Orders
+      summary: Compensate order (Saga pattern)
+      description: Trigger compensation for a failed order to rollback inventory and payment
+      operationId: compensateOrder
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Compensation-Trigger
+          in: header
+          required: false
+          schema:
+            type: string
+          description: Source that triggered compensation
+      responses:
+        '200':
+          description: Compensation completed successfully
+          content:
+            application/json:
+              schema:
+                type: string
+        '500':
+          description: Compensation failed
+          content:
+            application/json:
+              schema:
+                type: string
 
   # Inventory Endpoints
   /api/inventory/create:
@@ -610,8 +662,15 @@ paths:
       tags:
         - Payment
       summary: Initiate payment
-      description: Create a new payment request
+      description: Create a new payment request with idempotency support
       operationId: initiatePayment
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: false
+          schema:
+            type: string
+          description: Idempotency key to prevent duplicate payments (auto-generated if not provided)
       requestBody:
         required: true
         content:
@@ -677,6 +736,28 @@ paths:
                 $ref: '#/components/schemas/Payment'
         '404':
           description: Payment not found
+
+  /api/payments/cancel/{orderId}:
+    post:
+      tags:
+        - Payment
+      summary: Cancel payment (Saga compensation)
+      description: Cancel a payment as part of order compensation in Saga pattern
+      operationId: cancelPayment
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Payment cancelled successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
 
   # Shipping Endpoints
   /api/shipping:
@@ -786,20 +867,21 @@ paths:
               schema:
                 $ref: '#/components/schemas/Notification'
 
-  /api/notifications/{userId}:
+  /api/notifications:
     get:
       tags:
         - Notifications
       summary: Get user notifications
-      description: Retrieve all notifications for a specific user
+      description: Retrieve all notifications for the authenticated user
       operationId: getUserNotifications
       parameters:
-        - name: userId
-          in: path
+        - name: X-User-Id
+          in: header
           required: true
           schema:
             type: integer
             format: int64
+          description: User ID from authentication context
       responses:
         '200':
           description: Notifications retrieved successfully
