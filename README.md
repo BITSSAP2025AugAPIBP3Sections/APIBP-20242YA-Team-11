@@ -41,33 +41,35 @@ We adopted an API-first approach by designing the OpenAPI (Swagger) and GraphQL 
 
 ## 4. Core Functionalities
 
-- 🔑 Multi-role Support: Customer and Seller roles with granular permissions  
-- 🔐 User Authentication & Registration (JWT)  
-- 🛍️ Product Catalog: Full CRUD operations with GraphQL query support  
-- 🛒 Shopping Cart: Add, remove, update quantities, checkout  
-- 📦 Inventory Management: Real-time stock tracking and reservation  
-- 💳 Payment Integration: Mock payment gateway with success/failure simulation  
-- 🗄️ Database Persistence: PostgreSQL  
-- ⚠️ Exception Handling  
-- ✅ Validations  
+🔑 Multi-role Support: Customer and Seller roles with granular permissions  
+🔐 User Authentication & Registration (JWT)  
+🛍️ Product Catalog: Full CRUD operations with GraphQL query support  
+🛒 Shopping Cart: Add, remove, update quantities, checkout  
+📦 Inventory Management: Real-time stock tracking and reservation  
+💳 Payment Integration: Mock payment gateway with success/failure simulation  
+🗄️ Database Persistence: PostgreSQL  
+⚠️ Exception Handling  
+✅ Validations
+🚦 Rate Limiting: Protects APIs from excessive requests  
+🏷️ API Versioning: All REST endpoints are versioned (e.g., `/api/v1/...`)
 
 ---
 
 ## 5. Scope In
 
-- 👥 **Customer and Seller flows**: Registration, login, product management, cart, order, inventory, and mocked payment  
-- 🔄 **Hybrid API Implementation**: REST + GraphQL  
-- 🧑‍💻 **User Management**: Registration, Authentication (JWT), Profile management  
+👥 **Customer and Seller flows**: Registration, login, product management, cart, order, inventory, and mocked payment  
+🔄 **Hybrid API Implementation**: REST + GraphQL  
+🧑‍💻 **User Management**: Registration, Authentication (JWT), Profile management  
 
 ---
 
 ## 6. Scope Out
 
-- 🏗️ Microservices  
-- 🛠️ Admin features  
-- 📧 Notifications (Email/SMS)  
-- 🚚 Real-time shipping/tracking  
-- 💸 Actual payment gateway integration  
+🏗️ Microservices  
+🛠️ Admin features  
+📧 Notifications (Email/SMS)  
+🚚 Real-time shipping/tracking  
+💸 Actual payment gateway integration  
 
 ---
 
@@ -177,34 +179,34 @@ Once the application starts successfully, you can access it at:
 
 ## 9. API Endpoints
 
-| 🗂️ Domain | 🔀 Method Type | 🔗 Endpoint | 📝 Description | 👤 Who can use it |
-|-----------|---------------|-------------|---------------|------------------|
-| Authentication | POST | `/api/auth/login` | Authenticate user and return JWT token with user details | CUSTOMER, SELLER |
-| Authentication | POST | `/api/auth/register` | Register a new user account | CUSTOMER, SELLER |
-| Users | GET | `/api/users/me` | Get profile details of the currently logged-in user | CUSTOMER, SELLER |
-| Users | PUT | `/api/users/me` | Update profile information of the currently logged-in user | CUSTOMER, SELLER |
-| Products (GraphQL) | POST | `/graphql` | GraphQL endpoint for product operations (Queries & Mutations). Queries: Get/Search Products. Mutations: Create/Update/Delete Products. | Queries: CUSTOMER, SELLER; Mutations: SELLER |
-| Cart | GET | `/api/cart` | Retrieve the shopping cart for the current user | CUSTOMER |
-| Cart | POST | `/api/cart/items` | Add a product to the user's shopping cart | CUSTOMER |
-| Cart | DELETE | `/api/cart/items` | Remove all items from the user's cart | CUSTOMER |
-| Cart | DELETE | `/api/cart/items/{itemId}` | Remove a specific item from the user's cart | CUSTOMER |
-| Cart | POST | `/api/cart/checkout` | Process cart checkout and create an order | CUSTOMER |
-| Orders | GET | `/api/orders/user` | Retrieve orders for the current user with pagination | CUSTOMER |
-| Orders | GET | `/api/orders/{orderId}` | Retrieve a specific order | CUSTOMER (own), SELLER (related) |
-| Orders | PUT | `/api/orders/{orderId}/status` | Update order status (Customer can cancel; Seller can update fulfillment status) | CUSTOMER (cancel only), SELLER |
-| Inventory | POST | `/api/inventory` | Create inventory for a product | SELLER |
-| Inventory | GET | `/api/inventory/{productId}` | Retrieve inventory information for a specific product | CUSTOMER, SELLER |
-| Inventory | PATCH | `/api/inventory/{productId}/increase` | Increase inventory stock for a product | SELLER |
-| Inventory | PATCH | `/api/inventory/{productId}/decrease` | Decrease inventory stock for a product | SELLER |
-| Payments | POST | `/api/payments` | Initiate a payment for an order | CUSTOMER |
-| Payments | GET | `/api/payments/{orderId}` | Retrieve payment status for an order | CUSTOMER (own), SELLER (related) |
-| Payments | DELETE | `/api/payments/{orderId}` | Cancel or refund a payment | CUSTOMER (own) |
-| Payments | PUT | `/api/payments/{orderId}/confirm` | Mark payment as successful | CUSTOMER, System |
-| Payments | PUT | `/api/payments/{orderId}/fail` | Mark payment as failed | System |
-| Shipping | POST | `/api/shipping` | Create a new shipment for an order | CUSTOMER, SELLER |
-| Shipping | GET | `/api/shipping/{orderId}` | Retrieve shipment information for an order | CUSTOMER (own), SELLER (related) |
-| Shipping | PATCH | `/api/shipping/{shipmentId}/status` | Update the status of a shipment | SELLER |
-| Notifications | GET | `/api/notifications` | Retrieve notifications for the current user | CUSTOMER, SELLER |
+| 🗂️ Domain         | 🔀 Method Type | 🔗 Endpoint                       | 📝 Description                                                                                                    | 👤 Who can use it                        |
+|-------------------|---------------|-----------------------------------|--------------------------------------------------------------------------------------------------------------------|------------------------------------------|
+| Authentication    | POST          | `/api/v1/auth/login`              | Authenticate user and return JWT token with user details                                                           | CUSTOMER, SELLER                         |
+| Authentication    | POST          | `/api/v1/auth/register`           | Register a new user account                                                                                        | CUSTOMER, SELLER                         |
+| Users             | GET           | `/api/v1/users/me`                | Get profile details of the currently logged-in user                                                                | CUSTOMER, SELLER                         |
+| Users             | PUT           | `/api/v1/users/me`                | Update profile information of the currently logged-in user                                                         | CUSTOMER, SELLER                         |
+| Products (GraphQL)| POST          | `/api/v1/graphql`                 | GraphQL endpoint for product operations (Queries & Mutations). Queries: Get/Search Products. Mutations: Create/Update/Delete Products. | Queries: CUSTOMER, SELLER; Mutations: SELLER |
+| Cart              | GET           | `/api/v1/cart`                    | Retrieve the shopping cart for the current user                                                                    | CUSTOMER                                 |
+| Cart              | POST          | `/api/v1/cart/items`              | Add a product to the user's shopping cart                                                                          | CUSTOMER                                 |
+| Cart              | DELETE        | `/api/v1/cart/items`              | Remove all items from the user's cart                                                                              | CUSTOMER                                 |
+| Cart              | DELETE        | `/api/v1/cart/items/{itemId}`     | Remove a specific item from the user's cart                                                                        | CUSTOMER                                 |
+| Cart              | POST          | `/api/v1/cart/checkout`           | Process cart checkout and create an order                                                                          | CUSTOMER                                 |
+| Orders            | GET           | `/api/v1/orders/user`             | Retrieve orders for the current user with pagination                                                               | CUSTOMER                                 |
+| Orders            | GET           | `/api/v1/orders/{orderId}`        | Retrieve a specific order                                                                                          | CUSTOMER (own), SELLER (related)         |
+| Orders            | PUT           | `/api/v1/orders/{orderId}/status` | Update order status (Customer can cancel; Seller can update fulfillment status)                                    | CUSTOMER (cancel only), SELLER           |
+| Inventory         | POST          | `/api/v1/inventory`               | Create inventory for a product                                                                                     | SELLER                                   |
+| Inventory         | GET           | `/api/v1/inventory/{productId}`   | Retrieve inventory information for a specific product                                                              | CUSTOMER, SELLER                         |
+| Inventory         | PATCH         | `/api/v1/inventory/{productId}/increase` | Increase inventory stock for a product                                                                       | SELLER                                   |
+| Inventory         | PATCH         | `/api/v1/inventory/{productId}/decrease` | Decrease inventory stock for a product                                                                       | SELLER                                   |
+| Payments          | POST          | `/api/v1/payments`                | Initiate a payment for an order                                                                                    | CUSTOMER                                 |
+| Payments          | GET           | `/api/v1/payments/{orderId}`      | Retrieve payment status for an order                                                                               | CUSTOMER (own), SELLER (related)         |
+| Payments          | DELETE        | `/api/v1/payments/{orderId}`      | Cancel or refund a payment                                                                                         | CUSTOMER (own)                           |
+| Payments          | PUT           | `/api/v1/payments/{orderId}/confirm` | Mark payment as successful                                                                                   | CUSTOMER, System                         |
+| Payments          | PUT           | `/api/v1/payments/{orderId}/fail`    | Mark payment as failed                                                                                       | System                                   |
+| Shipping          | POST          | `/api/v1/shipping`                | Create a new shipment for an order                                                                                 | CUSTOMER, SELLER                         |
+| Shipping          | GET           | `/api/v1/shipping/{orderId}`      | Retrieve shipment information for an order                                                                        | CUSTOMER (own), SELLER (related)         |
+| Shipping          | PATCH         | `/api/v1/shipping/{shipmentId}/status` | Update the status of a shipment                                                                              | SELLER                                   |
+| Notifications     | GET           | `/api/v1/notifications`           | Retrieve notifications for the current user                                                                       | CUSTOMER, SELLER                         |
 
 ---
 
