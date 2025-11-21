@@ -35,69 +35,6 @@ public class InventoryController {
     private final InventoryService inventoryService;
     private final ProductService productService;
 
-
-
-    /**
-     * Create new inventory for a product (POST /api/inventory)
-     * Returns 201 Created with Location header
-     */
-    @PostMapping
-    @Operation(
-        summary = "Create inventory for a product",
-        description = "Create new inventory record for a product. Only the product owner (seller) can create inventory."
-    )
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "201", description = "Inventory successfully created",
-                     content = @Content(schema = @Schema(implementation = Inventory.class))),
-        @ApiResponse(responseCode = "400", description = "Invalid request body or validation error",
-                     content = @Content),
-        @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing JWT token",
-                     content = @Content),
-        @ApiResponse(responseCode = "403", description = "Forbidden - Not the product owner or requires SELLER role",
-                     content = @Content)
-    })
-    @PreAuthorize("hasRole('SELLER')")
-    public ResponseEntity<Inventory> createInventory(
-            @Valid @RequestBody InventoryRequest req) {
-        
-        log.info("Create inventory request - productId: {}, quantity: {}",
-                req.getProductId(), req.getQuantity());
-
-        Long authenticatedUserId = null;
-        Authentication authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetails userDetails && userDetails instanceof UserDetailsImpl authenticatedUser) {
-                authenticatedUserId = authenticatedUser.getUser().getId();
-            }
-
-        if (authenticatedUserId == null) {
-            log.warn("Authenticated user not found");
-            throw new UnauthorizedException("User not authenticated");
-        }
-        
-        Long productOwnerId = productService.getProductById(req.getProductId()).getSellerId();
-        if (!authenticatedUserId.equals(productOwnerId)) {
-            log.warn("User {} does not own product {}", authenticatedUserId, req.getProductId());
-            throw new UnauthorizedException("You do not own this product");
-        }
-
-        Inventory inventory = Inventory.builder()
-                .productId(req.getProductId())
-                .quantity(req.getQuantity())
-                .reservedQuantity(0)
-                .build();
-        Inventory created = inventoryService.createInventory(inventory);
-        log.info("Inventory created successfully - productId: {}, inventoryId: {}", req.getProductId(), created.getId());
-        
-        // Return 201 Created with Location header
-        return ResponseEntity.created(
-            org.springframework.web.servlet.support.ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{productId}")
-                .buildAndExpand(created.getProductId())
-                .toUri()
-        ).body(created);
-    }
-
     /**
      * Increase inventory stock (PATCH /api/inventory/{productId}/increase)
      * Returns 200 OK
