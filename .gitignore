@@ -1,6 +1,7 @@
 # Maven target directory
 /target/
 !.mvn/wrapper/maven-wrapper.jar
+**/target/
 
 # Maven build files
 log/
