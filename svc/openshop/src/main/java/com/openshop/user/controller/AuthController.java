@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Map;
 
 @RestController
@@ -96,7 +95,7 @@ public class AuthController {
      */
     @PostMapping("/register")
     @Operation(summary = "Register new user", description = "Creates a new user account with validated credentials")
-    public ResponseEntity<Object> register(@Valid @RequestBody RegisterRequestDTO dto) throws URISyntaxException {
+    public ResponseEntity<Object> register(@Valid @RequestBody RegisterRequestDTO dto) {
         // Use validated DTO instead of entity
         // Reduced logging
         logger.info("User registration attempt");

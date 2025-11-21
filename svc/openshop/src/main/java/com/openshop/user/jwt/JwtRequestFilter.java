@@ -1,6 +1,6 @@
 package com.openshop.user.jwt;
 
-import com.openshop.user.model.User;
+
 import com.openshop.user.service.CustomUserDetailsService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -12,8 +12,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.slf4j.Logger;
@@ -132,7 +132,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 customDetails.put("request", request);
                 
                 // Extract user ID and role from UserDetails (CustomUserDetails should have User entity)
-                if (userDetails instanceof org.springframework.security.core.userdetails.User) {
+                if (userDetails instanceof User) {
                     // Extract userId and role from JWT claims if needed
                     try {
                         Long userId = jwtUtil.extractUserId(jwt);
