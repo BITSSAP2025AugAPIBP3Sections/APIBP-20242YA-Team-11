@@ -1,6 +1,5 @@
-# 🚀 OpenShop - E-commerce Platform
 
-![OpenShop Banner](assets/Readme%20file%20banner.png)
+![OpenShop Banner](assets/Readme%20file%20banner.jpg)
 
 ## 📚 Table of Contents
 1. Product Overview
