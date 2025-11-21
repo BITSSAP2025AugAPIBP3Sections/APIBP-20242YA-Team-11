@@ -13,7 +13,7 @@ import java.util.UUID;
 /**
  * FIX BL-002: Added pessimistic locking to prevent race conditions
  */
-public interface InventoryRepository extends JpaRepository<Inventory, Long> {
+public interface InventoryRepository extends JpaRepository<Inventory, UUID> {
     Optional<Inventory> findByProductId(UUID productId);
     
     /**
