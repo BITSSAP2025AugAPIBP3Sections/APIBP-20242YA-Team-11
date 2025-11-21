@@ -5,6 +5,7 @@ import com.openshop.user.dto.LoginResponseDTO;
 import com.openshop.user.dto.RegisterRequestDTO;
 import com.openshop.user.jwt.JwtUtil;
 import com.openshop.user.mapper.UserMapper;
+import com.openshop.user.model.Role;
 import com.openshop.user.model.User;
 import com.openshop.user.service.UserDetailsImpl;
 import com.openshop.user.service.UserService;
@@ -22,6 +23,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -115,13 +117,15 @@ public class AuthController {
                     .body(Map.of("error", "Email already exists"));
         }
 
+
+
         // Convert DTO to entity
         User user = User.builder()
                 .username(dto.getUsername())
                 .email(dto.getEmail())
                 .password(dto.getPassword())
                 .name(dto.getName())
-                .role(com.openshop.user.model.Role.CUSTOMER)
+                .role(Objects.equals(dto.getRole(), "CUSTOMER") || dto.getRole() == null ? Role.CUSTOMER : Role.SELLER) // Default role CUSTOMER
                 .build();
 
         // Register the user

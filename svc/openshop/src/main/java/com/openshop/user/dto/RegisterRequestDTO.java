@@ -1,5 +1,6 @@
 package com.openshop.user.dto;
 
+import com.openshop.user.model.Role;
 import com.openshop.user.validation.PasswordStrength;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -33,4 +34,6 @@ public class RegisterRequestDTO {
     @NotBlank(message = "Name is required")
     @Size(min = 1, max = 100, message = "Name must be between 1 and 100 characters")
     private String name;
+
+    private String role;
 }

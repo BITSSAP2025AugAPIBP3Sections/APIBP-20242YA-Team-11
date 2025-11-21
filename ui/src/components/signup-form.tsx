@@ -61,6 +61,7 @@ export function SignupForm({
         username: formData.username,
         email: formData.email,
         password: formData.password,
+        role: isSeller ? 'SELLER' : 'CUSTOMER',
         name: formData.name,
       };
 

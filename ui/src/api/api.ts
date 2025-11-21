@@ -45,6 +45,7 @@ export interface RegisterRequest {
   username: string;
   email: string;
   password: string;
+  role: string;
   name: string;
 }
 
@@ -193,7 +194,7 @@ export interface CartDTO {
 }
 
 // Payment Types
-export type PaymentStatus = 'INITIATED' | 'SUCCESS' | 'FAILED' | 'REFUNDED';
+export type PaymentStatus = 'INITIATED' | 'SUCCESS' | 'FAILED' | 'REFUNDED' | 'PENDING' ;
 
 export interface Payment {
   id: string;
@@ -209,7 +210,6 @@ export interface Payment {
 export interface InitiatePaymentRequest {
   orderId: string;
   userId: number;
-  amount: number;
   status?: PaymentStatus;
 }
 
@@ -276,8 +276,6 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080
 class ApiClient {
   private client: AxiosInstance;
   private token: string | null = null;
-  private userId: number | null = null;
-  private userRole: UserRole | null = null;
 
   constructor() {
     this.client = axios.create({
@@ -322,8 +320,6 @@ class ApiClient {
   // Token management
   setToken(token: string, userId: number, userRole: UserRole) {
     this.token = token;
-    this.userId = userId;
-    this.userRole = userRole;
     if (typeof window !== 'undefined') {
       localStorage.setItem('auth_token', token);
       localStorage.setItem('user_id', userId.toString());
@@ -333,8 +329,6 @@ class ApiClient {
 
   clearToken() {
     this.token = null;
-    this.userId = null;
-    this.userRole = null;
     if (typeof window !== 'undefined') {
       localStorage.removeItem('auth_token');
       localStorage.removeItem('user_id');
@@ -349,8 +343,6 @@ class ApiClient {
       const userRole = localStorage.getItem('user_role');
       if (token && userId && userRole) {
         this.token = token;
-        this.userId = parseInt(userId);
-        this.userRole = userRole as UserRole;
       }
     }
   }
