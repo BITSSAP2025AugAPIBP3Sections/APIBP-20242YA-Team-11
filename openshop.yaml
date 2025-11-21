@@ -17,10 +17,10 @@ info:
     email: support@openshop.com
 
 servers:
-  - url: http://localhost:8080
-    description: Local development server
-  - url: https://api.openshop.com
-    description: Production server
+  - url: http://localhost:8080/api/v1
+    description: Local development server (v1)
+  - url: https://api.openshop.com/api/v1
+    description: Production server (v1)
 
 tags:
   - name: Authentication
@@ -48,7 +48,7 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: JWT token obtained from /api/auth/login. User info is extracted from JWT claims.
+      description: JWT token obtained from /api/v1/auth/login. User info is extracted from JWT claims.
   
   schemas:
     # Authentication Schemas
@@ -427,7 +427,7 @@ components:
 
 paths:
   # Authentication Endpoints
-  /api/auth/login:
+  /api/v1/auth/login:
     post:
       tags:
         - Authentication
@@ -466,7 +466,7 @@ paths:
         '401':
           description: Authentication failed
   
-  /api/auth/register:
+  /api/v1/auth/register:
     post:
       tags:
         - Authentication
@@ -503,7 +503,7 @@ paths:
           description: Username or email already exists
   
   # User Management Endpoints
-  /api/users/me:
+  /api/v1/users/me:
     get:
       tags:
         - Users
@@ -554,7 +554,7 @@ paths:
         '404':
           description: User not found
   
-  /api/users/{id}:
+  /api/v1/users/{id}:
     delete:
       tags:
         - Users
@@ -582,7 +582,7 @@ paths:
           description: User not found
   
   # Product Service (GraphQL Only)
-  /graphql:
+  /api/v1/graphql:
     post:
       tags:
         - Products (GraphQL)
@@ -622,7 +622,7 @@ paths:
           description: Unauthorized
   
   # Cart Endpoints
-  /api/cart:
+  /api/v1/cart:
     get:
       tags:
         - Cart
@@ -646,7 +646,7 @@ paths:
         '403':
           description: Forbidden - CUSTOMER role required
   
-  /api/cart/items:
+  /api/v1/cart/items:
     post:
       tags:
         - Cart
@@ -694,7 +694,7 @@ paths:
         '403':
           description: Forbidden - CUSTOMER role required
   
-  /api/cart/items/{itemId}:
+  /api/v1/cart/items/{itemId}:
     delete:
       tags:
         - Cart
@@ -723,7 +723,7 @@ paths:
         '403':
           description: Forbidden - CUSTOMER role required
   
-  /api/cart/checkout:
+  /api/v1/cart/checkout:
     post:
       tags:
         - Cart
@@ -750,7 +750,7 @@ paths:
           description: Insufficient stock
   
   # Order Endpoints
-  /api/orders:
+  /api/v1/orders:
     get:
       tags:
         - Orders
@@ -803,7 +803,7 @@ paths:
         '403':
           description: Forbidden - ADMIN role required
   
-  /api/orders/user:
+  /api/v1/orders/user:
     get:
       tags:
         - Orders
@@ -852,7 +852,7 @@ paths:
         '403':
           description: Forbidden - CUSTOMER role required
   
-  /api/orders/{orderId}:
+  /api/v1/orders/{orderId}:
     get:
       tags:
         - Orders
@@ -883,7 +883,7 @@ paths:
         '404':
           description: Order not found
   
-  /api/orders/{orderId}/status:
+  /api/v1/orders/{orderId}/status:
     put:
       tags:
         - Orders
@@ -923,7 +923,7 @@ paths:
           description: Order not found
   
   # Inventory Endpoints
-  /api/inventory:
+  /api/v1/inventory:
     post:
       tags:
         - Inventory
@@ -959,7 +959,7 @@ paths:
         '403':
           description: Forbidden - SELLER role required or not product owner
   
-  /api/inventory/{productId}:
+  /api/v1/inventory/{productId}:
     get:
       tags:
         - Inventory
@@ -986,7 +986,7 @@ paths:
         '404':
           description: Inventory not found
   
-  /api/inventory/{productId}/increase:
+  /api/v1/inventory/{productId}/increase:
     patch:
       tags:
         - Inventory
@@ -1021,7 +1021,7 @@ paths:
         '403':
           description: Forbidden - SELLER role required or not product owner
   
-  /api/inventory/{productId}/decrease:
+  /api/v1/inventory/{productId}/decrease:
     patch:
       tags:
         - Inventory
@@ -1059,7 +1059,7 @@ paths:
           description: Forbidden - SELLER role required or not product owner
   
   # Payment Endpoints
-  /api/payments:
+  /api/v1/payments:
     post:
       tags:
         - Payments
@@ -1105,7 +1105,7 @@ paths:
         '400':
           description: Invalid request
   
-  /api/payments/{orderId}:
+  /api/v1/payments/{orderId}:
     get:
       tags:
         - Payments
@@ -1160,7 +1160,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Payment'
   
-  /api/payments/{orderId}/confirm:
+  /api/v1/payments/{orderId}/confirm:
     put:
       tags:
         - Payments
@@ -1187,7 +1187,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Payment'
   
-  /api/payments/{orderId}/fail:
+  /api/v1/payments/{orderId}/fail:
     put:
       tags:
         - Payments
@@ -1215,7 +1215,7 @@ paths:
                 $ref: '#/components/schemas/Payment'
   
   # Shipping Endpoints
-  /api/shipping:
+  /api/v1/shipping:
     post:
       tags:
         - Shipping
@@ -1254,7 +1254,7 @@ paths:
         '401':
           description: Not authenticated
   
-  /api/shipping/{orderId}:
+  /api/v1/shipping/{orderId}:
     get:
       tags:
         - Shipping
@@ -1283,7 +1283,7 @@ paths:
         '404':
           description: Shipment not found
   
-  /api/shipping/{shipmentId}/status:
+  /api/v1/shipping/{shipmentId}/status:
     patch:
       tags:
         - Shipping
@@ -1319,7 +1319,7 @@ paths:
           description: Forbidden - SELLER or ADMIN role required
   
   # Notification Endpoints
-  /api/notifications:
+  /api/v1/notifications:
     post:
       tags:
         - Notifications
