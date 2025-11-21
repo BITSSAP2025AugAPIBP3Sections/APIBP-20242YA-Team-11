@@ -1,0 +1,69 @@
+meta {
+  name: Create Product
+  type: graphql
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/graphql
+  body: graphql
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+body:graphql {
+  mutation CreateProduct($input: CreateProductInput!) {
+    createProduct(input: $input) {
+      success
+      message
+      product {
+        id
+        name
+        description
+        category
+        price
+        currency
+        sku
+        imageUrl
+        sellerId
+        status
+        createdAt
+        updatedAt
+      }
+      errors {
+        field
+        message
+        code
+      }
+    }
+  }
+}
+
+body:graphql:vars {
+  {
+    "input": {
+      "name": "New Product",
+      "description": "Product description",
+      "category": "Electronics",
+      "price": 99.99,
+      "currency": "USD",
+      "sku": "PROD-001",
+      "imageUrl": "https://example.com/image.jpg"
+    }
+  }
+}
+
+script:post-response {
+  if (res.body.data && res.body.data.createProduct && res.body.data.createProduct.product) {
+    bru.setVar("productId", res.body.data.createProduct.product.id);
+  }
+}
+
+docs {
+  Create a new product.
+  Requires SELLER role.
+  Returns the created product with ID.
+}

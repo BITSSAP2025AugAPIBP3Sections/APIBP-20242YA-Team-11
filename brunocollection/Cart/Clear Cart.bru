@@ -1,0 +1,20 @@
+meta {
+  name: Clear Cart
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{baseUrl}}/api/v1/cart/items
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+docs {
+  Remove all items from the shopping cart.
+  Requires CUSTOMER role.
+}

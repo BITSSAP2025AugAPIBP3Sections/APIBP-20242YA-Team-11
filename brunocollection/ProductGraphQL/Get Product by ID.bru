@@ -1,0 +1,45 @@
+meta {
+  name: Get Product by ID
+  type: graphql
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/graphql
+  body: graphql
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+body:graphql {
+  query GetProduct($id: ID!) {
+    product(id: $id) {
+      id
+      name
+      description
+      category
+      price
+      currency
+      sku
+      imageUrl
+      sellerId
+      status
+      createdAt
+      updatedAt
+    }
+  }
+}
+
+body:graphql:vars {
+  {
+    "id": "{{productId}}"
+  }
+}
+
+docs {
+  Get a single product by ID using GraphQL.
+  Requires authentication.
+}

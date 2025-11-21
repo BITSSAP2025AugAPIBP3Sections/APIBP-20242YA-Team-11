@@ -1,0 +1,25 @@
+meta {
+  name: Increase Stock
+  type: http
+  seq: 3
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/inventory/{{productId}}/increase?quantity=50
+  body: none
+  auth: bearer
+}
+
+params:query {
+  quantity: 50
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+docs {
+  Increase the available stock quantity for a product.
+  Only the product owner (seller) can increase stock.
+  Requires SELLER role.
+}

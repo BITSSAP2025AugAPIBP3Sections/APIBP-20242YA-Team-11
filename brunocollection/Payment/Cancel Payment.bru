@@ -1,0 +1,21 @@
+meta {
+  name: Cancel Payment
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/api/v1/payments/{{orderId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+docs {
+  Cancel or refund a payment transaction.
+  This is a compensation endpoint for the Saga pattern.
+  Requires authentication.
+}

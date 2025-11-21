@@ -36,7 +36,7 @@ import java.util.UUID;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/orders")
+@RequestMapping("/api/v1/orders")
 @RequiredArgsConstructor
 @Tag(name = "Order Management", description = "APIs for managing customer orders")
 @SecurityRequirement(name = "bearer-jwt")

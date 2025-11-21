@@ -1,0 +1,20 @@
+meta {
+  name: Get Shipment by Order
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/shipping/{{orderId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+docs {
+  Retrieve shipment details for a specific order.
+  Requires authentication.
+}

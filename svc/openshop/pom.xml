@@ -114,7 +114,13 @@
 			<artifactId>spring-graphql-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-	</dependencies>
+        <!-- For java 17+ -->
+        <dependency>
+            <groupId>com.bucket4j</groupId>
+            <artifactId>bucket4j_jdk17-core</artifactId>
+            <version>8.15.0</version>
+        </dependency>
+    </dependencies>
 
 	<build>
 		<plugins>

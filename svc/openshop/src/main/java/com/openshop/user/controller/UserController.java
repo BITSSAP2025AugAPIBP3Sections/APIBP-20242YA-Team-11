@@ -32,7 +32,7 @@ import java.util.Optional;
  * Only accessible to users with ADMIN role.
  */
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/v1//users")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "User Management", description = "APIs for managing user accounts and profiles")

@@ -1,0 +1,20 @@
+meta {
+  name: Get Order by ID
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/orders/{{orderId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+docs {
+  Get detailed information about a specific order.
+  Users can only view their own orders unless they have ADMIN role.
+}

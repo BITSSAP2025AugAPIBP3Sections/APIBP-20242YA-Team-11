@@ -1,0 +1,28 @@
+meta {
+  name: Update Order Status
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{baseUrl}}/api/v1/orders/{{orderId}}/status?status=CANCELLED
+  body: none
+  auth: bearer
+}
+
+params:query {
+  status: CANCELLED
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+docs {
+  Update the status of an order.
+  - Customers can cancel their own orders (status=CANCELLED)
+  - Admins can update to any status
+  
+  Available statuses: PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED
+  Requires CUSTOMER role (for cancellation) or ADMIN role (for other status updates).
+}

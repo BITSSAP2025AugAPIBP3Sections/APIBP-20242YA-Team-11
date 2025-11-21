@@ -1,0 +1,28 @@
+meta {
+  name: Get My Orders
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/orders?page=0&size=20&sortBy=createdAt&sortDir=DESC
+  body: none
+  auth: bearer
+}
+
+params:query {
+  page: 0
+  size: 20
+  sortBy: createdAt
+  sortDir: DESC
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+docs {
+  Get a paginated list of orders for the authenticated user.
+  Users can only view their own orders.
+  Requires CUSTOMER role.
+}

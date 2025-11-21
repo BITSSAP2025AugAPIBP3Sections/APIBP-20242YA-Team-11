@@ -1,0 +1,16 @@
+meta {
+  name: Get Inventory by Product
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/inventory/{{productId}}
+  body: none
+  auth: none
+}
+
+docs {
+  Get inventory information for a specific product.
+  Anyone can view inventory levels (no authentication required).
+}

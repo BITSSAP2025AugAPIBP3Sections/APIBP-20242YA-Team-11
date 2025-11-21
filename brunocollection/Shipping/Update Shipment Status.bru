@@ -1,0 +1,26 @@
+meta {
+  name: Update Shipment Status
+  type: http
+  seq: 3
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/shipping/{{shipmentId}}/status?status=SHIPPED
+  body: none
+  auth: bearer
+}
+
+params:query {
+  status: SHIPPED
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+docs {
+  Update the status of a shipment.
+  Only accessible to SELLER and ADMIN roles.
+  
+  Available statuses: PROCESSING, SHIPPED, IN_TRANSIT, DELIVERED
+}

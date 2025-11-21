@@ -1,0 +1,40 @@
+meta {
+  name: Delete Product
+  type: graphql
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/graphql
+  body: graphql
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+body:graphql {
+  mutation DeleteProduct($id: ID!) {
+    deleteProduct(id: $id) {
+      success
+      message
+      errors {
+        field
+        message
+        code
+      }
+    }
+  }
+}
+
+body:graphql:vars {
+  {
+    "id": "{{productId}}"
+  }
+}
+
+docs {
+  Delete a product by ID.
+  Requires SELLER role and ownership.
+}

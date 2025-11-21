@@ -1,0 +1,20 @@
+meta {
+  name: Get Cart
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/cart
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+docs {
+  Get the current user's shopping cart with all items.
+  Requires CUSTOMER role.
+}

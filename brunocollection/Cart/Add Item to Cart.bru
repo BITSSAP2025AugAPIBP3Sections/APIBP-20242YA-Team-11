@@ -1,0 +1,27 @@
+meta {
+  name: Add Item to Cart
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v1/cart/items
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+body:json {
+  {
+    "productId": "{{productId}}",
+    "quantity": 2
+  }
+}
+
+docs {
+  Add a product with specified quantity to the shopping cart.
+  Requires CUSTOMER role.
+}

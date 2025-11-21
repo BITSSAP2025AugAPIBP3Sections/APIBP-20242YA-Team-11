@@ -1,0 +1,20 @@
+meta {
+  name: Get Payment Status
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/payments/{{orderId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+docs {
+  Retrieve the payment status and details for a specific order.
+  Requires authentication.
+}

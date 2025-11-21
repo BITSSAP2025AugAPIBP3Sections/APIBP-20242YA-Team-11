@@ -1,0 +1,27 @@
+meta {
+  name: Checkout Cart
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/v1/cart/checkout
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+script:post-response {
+  if (res.status === 200 && res.body.id) {
+    bru.setVar("orderId", res.body.id);
+  }
+}
+
+docs {
+  Process cart checkout and create an order.
+  Validates inventory availability before placing the order.
+  Requires CUSTOMER role.
+}

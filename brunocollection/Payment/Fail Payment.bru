@@ -1,0 +1,20 @@
+meta {
+  name: Fail Payment
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/api/v1/payments/{{orderId}}/fail
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+docs {
+  Mark a payment transaction as failed for an order.
+  Requires authentication.
+}

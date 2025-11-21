@@ -33,7 +33,7 @@ import java.util.ArrayList;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/cart")
+@RequestMapping("/api/v1/cart")
 @RequiredArgsConstructor
 @Tag(name = "Shopping Cart", description = "APIs for managing shopping cart operations")
 @SecurityRequirement(name = "bearer-jwt")

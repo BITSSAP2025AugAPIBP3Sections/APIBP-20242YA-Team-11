@@ -1,6 +1,7 @@
 package com.openshop.user.config;
 
 
+import com.openshop.filter.RateLimitFilter;
 import com.openshop.user.jwt.JwtRequestFilter;
 import com.openshop.user.service.CustomUserDetailsService;
 import org.slf4j.Logger;
@@ -40,10 +41,12 @@ public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
     private final JwtRequestFilter jwtRequestFilter;
+    private final RateLimitFilter rateLimitFilter;
 
-    public SecurityConfig(CustomUserDetailsService userDetailsService, JwtRequestFilter jwtRequestFilter) {
+    public SecurityConfig(CustomUserDetailsService userDetailsService, JwtRequestFilter jwtRequestFilter, RateLimitFilter rateLimitFilter) {
         this.userDetailsService = userDetailsService;
         this.jwtRequestFilter = jwtRequestFilter;
+        this.rateLimitFilter = rateLimitFilter;
     }
 
     @Bean
@@ -53,8 +56,8 @@ public class SecurityConfig {
         http.authorizeHttpRequests(requests -> requests
                 // Public endpoints - no authentication required
                 .requestMatchers(
-                        "/api/auth/login",
-                        "/api/auth/register",
+                        "/api/v1/auth/login",
+                        "/api/v1/auth/register",
                         "/",
                         "/h2-console/**",
                         "/swagger-ui/**",
@@ -71,42 +74,42 @@ public class SecurityConfig {
                 .requestMatchers("/graphql").authenticated()
                 
                 // Product endpoints - public read, seller write
-                .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll() // Anyone can browse products
-                .requestMatchers(HttpMethod.POST, "/api/products/**").hasRole("SELLER") // Only sellers can add products
-                .requestMatchers(HttpMethod.PUT, "/api/products/**").hasRole("SELLER") // Only sellers can update products
-                .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasRole("SELLER") // Only sellers can delete products
+                .requestMatchers(HttpMethod.GET, "/api/v1/products/**").permitAll() // Anyone can browse products
+                .requestMatchers(HttpMethod.POST, "/api/v1/products/**").hasRole("SELLER") // Only sellers can add products
+                .requestMatchers(HttpMethod.PUT, "/api/v1/products/**").hasRole("SELLER") // Only sellers can update products
+                .requestMatchers(HttpMethod.DELETE, "/api/v1/products/**").hasRole("SELLER") // Only sellers can delete products
                 
                 // Inventory endpoints - public read, seller write
-                .requestMatchers(HttpMethod.GET, "/api/inventory/**").permitAll() // Anyone can check inventory
-                .requestMatchers(HttpMethod.POST, "/api/inventory/create").hasRole("SELLER") // Only sellers can create inventory
-                .requestMatchers(HttpMethod.POST, "/api/inventory/increase").hasRole("SELLER") // Only sellers can increase stock
-                .requestMatchers(HttpMethod.POST, "/api/inventory/reduce").authenticated() // System internal only (will be checked in service)
+                .requestMatchers(HttpMethod.GET, "/api/v1/inventory/**").permitAll() // Anyone can check inventory
+                .requestMatchers(HttpMethod.POST, "/api/v1/inventory/create").hasRole("SELLER") // Only sellers can create inventory
+                .requestMatchers(HttpMethod.POST, "/api/v1/inventory/increase").hasRole("SELLER") // Only sellers can increase stock
+                .requestMatchers(HttpMethod.POST, "/api/v1/inventory/reduce").authenticated() // System internal only (will be checked in service)
                 
                 // Cart endpoints - authenticated users (customers)
-                .requestMatchers("/api/cart/**").hasRole("CUSTOMER")
+                .requestMatchers("/api/v1/cart/**").hasRole("CUSTOMER")
                 
                 // Order endpoints - authenticated users
-                .requestMatchers(HttpMethod.POST, "/api/orders/**").hasRole("CUSTOMER") // Customers place orders
-                .requestMatchers(HttpMethod.GET, "/api/orders/user/**").hasRole("CUSTOMER") // Customers view their orders
-                .requestMatchers(HttpMethod.GET, "/api/orders/{orderId}").authenticated() // Owner or admin
-                .requestMatchers(HttpMethod.PUT, "/api/orders/*/status").hasAnyRole("CUSTOMER","SELLER", "ADMIN") // Sellers and admins update order status
+                .requestMatchers(HttpMethod.POST, "/api/v1/orders/**").hasRole("CUSTOMER") // Customers place orders
+                .requestMatchers(HttpMethod.GET, "/api/v1/orders/user/**").hasRole("CUSTOMER") // Customers view their orders
+                .requestMatchers(HttpMethod.GET, "/api/v1/orders/{orderId}").authenticated() // Owner or admin
+                .requestMatchers(HttpMethod.PUT, "/api/v1/orders/*/status").hasAnyRole("CUSTOMER","SELLER", "ADMIN") // Sellers and admins update order status
                 
                 // Payment endpoints - authenticated users
-                .requestMatchers("/api/payments/**").authenticated()
+                .requestMatchers("/api/v1/payments/**").authenticated()
                 
                 // Shipping endpoints
-                .requestMatchers(HttpMethod.GET, "/api/shipping/**").authenticated()
-                .requestMatchers(HttpMethod.PUT, "/api/shipping/**").hasAnyRole("SELLER", "ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/v1/shipping/**").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/api/v1/shipping/**").hasAnyRole("SELLER", "ADMIN")
                 
                 // Notification endpoints - internal/admin only
-                .requestMatchers("/api/notifications/**").hasRole("ADMIN")
+                .requestMatchers("/api/v1/notifications/**").hasRole("ADMIN")
                 
                 // User management endpoints
-                .requestMatchers(HttpMethod.GET, "/api/users/me").authenticated() // Any authenticated user can get their own profile
-                .requestMatchers(HttpMethod.PUT, "/api/users/me").authenticated() // Any authenticated user can update their own profile
-                .requestMatchers(HttpMethod.GET, "/api/users/{id}").hasAnyRole("ADMIN", "CUSTOMER", "SELLER") // Will be further restricted in controller
-                .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasRole("ADMIN") // Only admin can delete users
-                .requestMatchers("/api/users/**").hasRole("ADMIN") // All other user operations require admin
+                .requestMatchers(HttpMethod.GET, "/api/v1/users/me").authenticated() // Any authenticated user can get their own profile
+                .requestMatchers(HttpMethod.PUT, "/api/v1/users/me").authenticated() // Any authenticated user can update their own profile
+                .requestMatchers(HttpMethod.GET, "/api/v1/users/{id}").hasAnyRole("ADMIN", "CUSTOMER", "SELLER") // Will be further restricted in controller
+                .requestMatchers(HttpMethod.DELETE, "/api/v1/users/**").hasRole("ADMIN") // Only admin can delete users
+                .requestMatchers("/api/v1/users/**").hasRole("ADMIN") // All other user operations require admin
                 
                 // Default: all other requests must be authenticated
                 .anyRequest().authenticated()
@@ -124,6 +127,8 @@ public class SecurityConfig {
         http.headers(headers -> 
             headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
         );
+
+        http.addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class);
 
         // Add JWT filter before username/password authentication
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);

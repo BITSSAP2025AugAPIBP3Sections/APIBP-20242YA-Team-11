@@ -1,0 +1,27 @@
+meta {
+  name: Update My Profile
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{baseUrl}}/api/v1/users/me
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+body:json {
+  {
+    "name": "Updated Name",
+    "email": "updated@example.com"
+  }
+}
+
+docs {
+  Update the profile of the currently authenticated user.
+  Requires authentication.
+}

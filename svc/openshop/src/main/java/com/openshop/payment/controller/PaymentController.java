@@ -20,7 +20,7 @@ import java.util.UUID;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/payments")
+@RequestMapping("/api/v1/payments")
 @Tag(name = "Payment Management", description = "APIs for managing payment processing and transactions")
 @SecurityRequirement(name = "bearer-jwt")
 public class PaymentController {

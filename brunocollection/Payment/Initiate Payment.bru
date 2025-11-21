@@ -1,0 +1,33 @@
+meta {
+  name: Initiate Payment
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/payments
+  body: json
+  auth: bearer
+}
+
+headers {
+  Idempotency-Key: payment-{{orderId}}
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+body:json {
+  {
+    "orderId": "{{orderId}}",
+    "userId": {{userId}},
+    "amount": 99.99
+  }
+}
+
+docs {
+  Initiate a new payment transaction for an order.
+  Supports idempotency using Idempotency-Key header to prevent duplicate payments.
+  Requires authentication.
+}

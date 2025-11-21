@@ -1,0 +1,65 @@
+meta {
+  name: Get All Products
+  type: graphql
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/graphql
+  body: graphql
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+body:graphql {
+  query GetProducts($first: Int, $after: String, $filter: ProductFilter, $sort: ProductSort) {
+    products(first: $first, after: $after, filter: $filter, sort: $sort) {
+      edges {
+        node {
+          id
+          name
+          description
+          category
+          price
+          currency
+          sku
+          imageUrl
+          sellerId
+          status
+          createdAt
+          updatedAt
+        }
+        cursor
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+      totalCount
+    }
+  }
+}
+
+body:graphql:vars {
+  {
+    "first": 20,
+    "after": null,
+    "filter": {
+      "status": "ACTIVE"
+    },
+    "sort": {
+      "field": "CREATED_AT",
+      "direction": "DESC"
+    }
+  }
+}
+
+docs {
+  Get all products with pagination, filtering, and sorting.
+  Requires authentication.
+}

@@ -26,7 +26,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/inventory")
+@RequestMapping("/api/v1/inventory")
 @RequiredArgsConstructor
 @Tag(name = "Inventory Management", description = "APIs for managing product inventory and stock levels")
 @SecurityRequirement(name = "bearer-jwt")

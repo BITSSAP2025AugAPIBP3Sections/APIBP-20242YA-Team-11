@@ -166,7 +166,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
      * Check if the endpoint is public and doesn't require authentication
      */
     private boolean isPublicEndpoint(String requestURI) {
-        return requestURI.startsWith("/api/auth/") ||
+        return requestURI.startsWith("/api/v1/auth/") ||
                requestURI.startsWith("/h2-console") ||
                requestURI.startsWith("/swagger-ui") ||
                requestURI.startsWith("/v3/api-docs") ||
@@ -174,8 +174,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                requestURI.startsWith("/swagger-resources") ||
                requestURI.startsWith("/webjars") ||
                requestURI.equals("/") ||
-               (requestURI.startsWith("/api/products") && requestURI.contains("/api/products/")) || // GET products endpoints
-               (requestURI.startsWith("/api/inventory") && !requestURI.contains("/create") && !requestURI.contains("/increase") && !requestURI.contains("/reduce"));
+               (requestURI.startsWith("/api/v1/products") && requestURI.contains("/api/v1/products/")) || // GET products endpoints
+               (requestURI.startsWith("/api/v1/inventory") && !requestURI.contains("/create") && !requestURI.contains("/increase") && !requestURI.contains("/reduce"));
     }
 
     /**

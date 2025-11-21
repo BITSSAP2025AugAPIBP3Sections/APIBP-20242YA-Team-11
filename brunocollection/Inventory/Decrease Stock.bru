@@ -1,0 +1,25 @@
+meta {
+  name: Decrease Stock
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/inventory/{{productId}}/decrease?quantity=10
+  body: none
+  auth: bearer
+}
+
+params:query {
+  quantity: 10
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+docs {
+  Decrease the available stock quantity for a product.
+  Only the product owner (seller) can decrease stock.
+  Requires SELLER role.
+}

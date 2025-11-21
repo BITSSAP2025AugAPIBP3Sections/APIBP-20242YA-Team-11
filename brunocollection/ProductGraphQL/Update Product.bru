@@ -1,0 +1,60 @@
+meta {
+  name: Update Product
+  type: graphql
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/graphql
+  body: graphql
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+body:graphql {
+  mutation UpdateProduct($id: ID!, $input: UpdateProductInput!) {
+    updateProduct(id: $id, input: $input) {
+      success
+      message
+      product {
+        id
+        name
+        description
+        category
+        price
+        currency
+        sku
+        imageUrl
+        sellerId
+        status
+        createdAt
+        updatedAt
+      }
+      errors {
+        field
+        message
+        code
+      }
+    }
+  }
+}
+
+body:graphql:vars {
+  {
+    "id": "{{productId}}",
+    "input": {
+      "name": "Updated Product Name",
+      "price": 129.99,
+      "status": "ACTIVE"
+    }
+  }
+}
+
+docs {
+  Update an existing product.
+  Requires SELLER role and ownership.
+  Only provided fields will be updated.
+}

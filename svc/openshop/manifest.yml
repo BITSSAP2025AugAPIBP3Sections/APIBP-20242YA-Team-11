@@ -1,0 +1,15 @@
+---
+applications:
+  - name: spring-boot-backend
+    path: target/openshop-1.0.0.jar
+    memory: 1G
+    routes:
+      - route: openshop-backend.cfapps.us10-001.hana.ondemand.com
+    buildpacks:
+      - java_buildpack
+    env:
+      JBP_CONFIG_OPEN_JDK_JRE: '{ memory_calculator: { stack_threads: 200 },jre: { version: 17.+ } }'
+      JBP_CONFIG_SPRING_AUTO_RECONFIGURATION: '{enabled: false}'
+      MALLOC_ARENA_MAX: 4
+    services:
+      - postgres-db

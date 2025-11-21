@@ -20,7 +20,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/shipping")
+@RequestMapping("/api/v1/shipping")
 @RequiredArgsConstructor
 @Tag(name = "Shipping Management", description = "APIs for managing shipment and delivery operations")
 @SecurityRequirement(name = "bearer-jwt")
