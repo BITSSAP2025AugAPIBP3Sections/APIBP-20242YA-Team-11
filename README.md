@@ -1,6 +1,6 @@
 # 🚀 OpenShop - E-commerce Platform
 
----
+
 
 ## 📚 Table of Contents
 1. Product Overview
@@ -49,9 +49,9 @@ We adopted an API-first approach by designing the OpenAPI (Swagger) and GraphQL 
 💳 Payment Integration: Mock payment gateway with success/failure simulation  
 🗄️ Database Persistence: PostgreSQL  
 ⚠️ Exception Handling  
-✅ Validations
-🚦 Rate Limiting: Protects APIs from excessive requests  
-🏷️ API Versioning: All REST endpoints are versioned (e.g., `/api/v1/...`)
+✅ Validations    
+🚦Rate Limiting: Protects APIs from excessive requests    
+🏷️ API Versioning: All REST endpoints are versioned (e.g., `/api/v1/...`)   
 
 ---
 
