@@ -31,7 +31,7 @@ public class DataInitializer {
     private final InventoryRepository inventoryRepository;
     private final OrderRepository orderRepository;
 
-    public DataInitializer(UserService userService, 
+    public DataInitializer(UserService userService,
                           PasswordEncoder passwordEncoder,
                           ProductRepository productRepository,
                           InventoryRepository inventoryRepository,
@@ -215,7 +215,7 @@ public class DataInitializer {
         };
     }
 
-    private User createUserIfNotExists(String username, String name, String email, 
+    private User createUserIfNotExists(String username, String name, String email,
                                       String password, Role role) {
         Optional<User> existingUser = userService.findByUsername(username);
         if (existingUser.isPresent()) {

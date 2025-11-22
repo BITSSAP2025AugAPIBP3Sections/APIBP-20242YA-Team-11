@@ -37,7 +37,7 @@ public class OpenApiConfig {
                                 .url("http://localhost:8080")
                                 .description("Development Server"),
                         new Server()
-                                .url("https://api.openshop.com")
+                                .url("https://openshop-backend.cfapps.eu12.hana.ondemand.com")
                                 .description("Production Server")))
                 .components(new Components()
                         .addSecuritySchemes("bearer-jwt", new SecurityScheme()

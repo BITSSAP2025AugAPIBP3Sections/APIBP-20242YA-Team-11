@@ -1,10 +1,10 @@
 ---
 applications:
-  - name: spring-boot-backend
+  - name: openshop-backend
     path: target/openshop-1.0.0.jar
     memory: 1G
     routes:
-      - route: openshop-backend.cfapps.us10-001.hana.ondemand.com
+      - route: openshop-backend.cfapps.eu12.hana.ondemand.com
     buildpacks:
       - java_buildpack
     env:

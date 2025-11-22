@@ -168,7 +168,7 @@ public class SecurityConfig {
         corsConfiguration.setAllowedOrigins(Arrays.asList(
             "http://localhost:3000",
             "http://localhost:5173",
-            "http://localhost:8080"
+            "http://localhost:8080", "https://openshop.cfapps.eu12.hana.ondemand.com","https://openshop-backend.cfapps.eu12.hana.ondemand.com"
         ));
         
         // Do not use allowCredentials with allowedOrigins wildcard
